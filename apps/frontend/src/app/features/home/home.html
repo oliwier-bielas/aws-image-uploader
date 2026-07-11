@@ -13,5 +13,11 @@
       <aiu-button label="Start upload" variant="tonal"></aiu-button>
     </footer>
 
+    <section class="home-card__gallery">
+      <h2 class="home-card__gallery-title">Recent images</h2>
+      @if (uploadedImages()) {
+         <aiu-image-grid [images]="uploadedImages()!"></aiu-image-grid>
+      }
+    </section>
   </section>
 </div>
