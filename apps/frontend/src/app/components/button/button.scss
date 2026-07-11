@@ -1,0 +1,16 @@
+:host {
+  display: inline-flex;
+}
+
+.app-button {
+  min-width: 10rem;
+  padding-inline: 1.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+}
+
+.app-button:hover {
+  filter: brightness(0.98);
+}
