@@ -1,0 +1,16 @@
+@if (images().length) {
+  <section class="image-grid">
+    @for (image of images(); track image.id; let index = $index) {
+      <article class="image-grid__item">
+        <img
+          class="image-grid__image"
+          [src]="image.url"
+          [alt]="image.fileName || ('Uploaded image ' + (index + 1))"
+          loading="lazy"
+        />
+      </article>
+    }
+  </section>
+} @else {
+  <p class="image-grid__empty">No images yet.</p>
+}
