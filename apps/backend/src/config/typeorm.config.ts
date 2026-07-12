@@ -12,6 +12,7 @@ export function CreateTypeOrmConfig(
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
+        migrationsRun: true,
     };
 }
