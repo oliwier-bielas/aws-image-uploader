@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ImagesModule } from './images/images.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CreateTypeOrmConfig } from './config/typeorm.config';
 
 @Module({
   imports: [
@@ -10,6 +12,12 @@ import { ImagesModule } from './images/images.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: CreateTypeOrmConfig,
+    }),
+
     ImagesModule
   ],
   controllers: [AppController],
