@@ -1,10 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { S3Client } from "@aws-sdk/client-s3";
+import { Injectable, Logger } from "@nestjs/common";
+import { PutObjectCommand, PutObjectCommandInput, S3Client } from "@aws-sdk/client-s3";
 import { ConfigService } from "@nestjs/config";
+import { S3UploadException } from "../exceptions/s3-upload.exception";
 @Injectable()
 export class S3Service {
     private readonly s3Client: S3Client;
     private readonly bucketName: string;
+    private readonly logger = new Logger();
 
     constructor(private readonly configService: ConfigService) {
         const region = this.configService.getOrThrow<string>('AWS_REGION');
@@ -16,6 +18,24 @@ export class S3Service {
         });
     }
 
+    public async uploadFile(
+        key: string,
+        buffer: Buffer,
+        contentType: string,
+    ): Promise<void> {
+        try {
+            await this.s3Client.send(
+                new PutObjectCommand({
+                    Bucket: this.bucketName,
+                    Key: key,
+                    Body: buffer,
+                    ContentType: contentType,
+                }),
+            );
+        } catch (error: unknown) {
+            this.logger.error(`Failed to upload file to S3. Key: ${key}`, error);
+            throw new S3UploadException(error);
+        }
+    }
 
-    
 }
