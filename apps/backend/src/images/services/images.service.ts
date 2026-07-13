@@ -10,7 +10,7 @@ export class ImagesService {
         return this.imagesMocks;
     }
 
-    public getById(id: number): Image {
+    public getById(id: string): Image {
         const image = this.imagesMocks.find((image) => image.id === id);
 
         if (!image) {

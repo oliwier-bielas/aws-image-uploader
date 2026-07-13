@@ -1,6 +1,8 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ImagesService } from '../services/images.service';
 import type { Image } from '../interface/image.interface';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
 
 @Controller('images')
 export class ImagesController {
@@ -12,7 +14,7 @@ export class ImagesController {
     }
 
     @Get(':id')
-    getById(@Param('id', ParseIntPipe) id: number): Image {
+    getById(@Param('id') id: string): Image {
         return this.imageService.getById(id);
     }
 }
