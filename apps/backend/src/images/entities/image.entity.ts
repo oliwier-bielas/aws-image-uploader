@@ -13,5 +13,12 @@ export class Image {
     key!: string;
 
     @Column({ type: 'varchar', length: 255 })
-    originalName!: string;
+    fileName!: string;
+
+    @Column({ type: 'varchar', length: 100 })
+    contentType!: string;
+
+    @Column({ type: 'integer' })
+    size!: number;
+
 }
