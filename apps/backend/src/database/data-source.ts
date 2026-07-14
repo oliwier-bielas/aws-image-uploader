@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { Image } from '../images/entities/image.entity';
+import { ImageEntity } from '../images/entities/image.entity';
 
 export default new DataSource({
     type: 'postgres',
@@ -10,7 +10,7 @@ export default new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
 
-    entities: [Image],
+    entities: [ImageEntity],
     migrations: ['src/database/migrations/*{.ts,.js}'],
 
     synchronize: false,
