@@ -18,11 +18,13 @@ export class S3Service {
         });
     }
 
-    public async uploadFile(
+    public async uploadFile(data: {
         key: string,
         buffer: Buffer,
         contentType: string,
-    ): Promise<void> {
+    }): Promise<void> {
+
+        const { key, buffer, contentType } = data;
         try {
             await this.s3Client.send(
                 new PutObjectCommand({
