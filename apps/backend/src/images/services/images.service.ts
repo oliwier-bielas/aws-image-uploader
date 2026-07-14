@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
 import { IMAGES_MOCK } from '../mocks/images.mock';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,8 @@ import { S3Service } from '../../core/aws/s3/s3.service';
 import { Repository } from 'typeorm';
 import { ImageEntity } from '../entities/image.entity';
 import { Image } from '../interface/image.interface';
+import { extname } from 'path';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ImagesService {
@@ -14,6 +16,7 @@ export class ImagesService {
     constructor(
         @InjectRepository(ImageEntity)
         private readonly imageRepository: Repository<ImageEntity>,
+        private readonly s3Service: S3Service,
     ) { }
 
     public getAll(): Image[] {
@@ -30,7 +33,46 @@ export class ImagesService {
         return image;
     }
 
-    public uploadImage(file: Express.Multer.File): void {
+    public async uploadImage(file: Express.Multer.File): Promise<Image> {
+        const key = this.generateImageKey(file.originalname);
 
+        await this.s3Service.uploadFile({
+            key,
+            buffer: file.buffer,
+            contentType: file.mimetype
+        });
+
+        try {
+            const image = this.imageRepository.create({
+                key,
+                fileName: file.originalname,
+                contentType: file.mimetype,
+                size: file.size
+
+            });
+
+            const savedImage = await this.imageRepository.save(image);
+
+            return {
+                id: savedImage.id,
+                key: savedImage.key,
+                fileName: savedImage.fileName
+            } as Image;
+
+        } catch (error: unknown) {
+
+            throw new InternalServerErrorException(
+                'Failed to save image metadata', {
+                cause: error,
+                description: 'Database operation failed',
+            });
+        }
+
+    }
+
+    private generateImageKey(originalName: string): string {
+        const fileExtension = extname(originalName).toLocaleLowerCase();
+
+        return `images/${randomUUID()}${fileExtension}`
     }
 }

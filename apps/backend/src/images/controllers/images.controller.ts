@@ -17,4 +17,13 @@ export class ImagesController {
     getById(@Param('id') id: string): Image {
         return this.imageService.getById(id);
     }
+
+    
+    @Post()
+    @UseInterceptors(FileInterceptor('file'))
+    public async uploadImage(
+        @UploadedFile() file: Express.Multer.File,
+    ): Promise<Image> {
+        return this.imageService.uploadImage(file);
+    }
 }
