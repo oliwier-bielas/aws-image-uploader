@@ -9,16 +9,16 @@ export class ImagesController {
     constructor(private imageService: ImagesService) { }
 
     @Get()
-    getAll(): Image[] {
-        return this.imageService.getAll();
+    public getAll(): Promise<Image[]> {
+        return this.imageService.getAllImages();
     }
 
     @Get(':id')
-    getById(@Param('id') id: string): Image {
+    public getById(@Param('id') id: string): Image {
         return this.imageService.getById(id);
     }
 
-    
+
     @Post()
     @UseInterceptors(FileInterceptor('file'))
     public async uploadImage(

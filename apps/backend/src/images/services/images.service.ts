@@ -20,8 +20,16 @@ export class ImagesService {
         private readonly s3Service: S3Service,
     ) { }
 
-    public getAll(): Image[] {
-        return this.imagesMocks;
+    public async getAllImages(): Promise<Image[]> {
+        const images = await this.imageRepository.find();
+
+        return Promise.all(
+            images.map(async (image) => ({
+                id: image.id,
+                fileName: image.fileName,
+                key: await this.s3Service.getImageUrl(image.key),
+            })),
+        );
     }
 
     public getById(id: string): Image {
@@ -56,7 +64,7 @@ export class ImagesService {
 
             return {
                 id: savedImage.id,
-                key: savedImage.key,
+                key: await this.s3Service.getImageUrl(image.key),
                 fileName: savedImage.fileName
             };
 
