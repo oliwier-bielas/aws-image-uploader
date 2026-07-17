@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 
 import { IMAGES_MOCK } from '../mocks/images.mock';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { randomUUID } from 'crypto';
 @Injectable()
 export class ImagesService {
     private imagesMocks: Image[] = IMAGES_MOCK;
+    private readonly logger = new Logger();
 
     constructor(
         @InjectRepository(ImageEntity)
@@ -57,9 +58,11 @@ export class ImagesService {
                 id: savedImage.id,
                 key: savedImage.key,
                 fileName: savedImage.fileName
-            } as Image;
+            };
 
         } catch (error: unknown) {
+
+            await this.rollbackS3Upload(key);
 
             throw new InternalServerErrorException(
                 'Failed to save image metadata', {
@@ -68,6 +71,14 @@ export class ImagesService {
             });
         }
 
+    }
+
+    private async rollbackS3Upload(key: string): Promise<void> {
+        try {
+            await this.s3Service.deleteImage(key);
+        } catch (error: unknown) {
+            this.logger.error(`Failed to rollback S3 upload. Key: ${key}`, error);
+        }
     }
 
     private generateImageKey(originalName: string): string {
