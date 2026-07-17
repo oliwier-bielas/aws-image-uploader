@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
 import { PutObjectCommand, PutObjectCommandInput, S3Client } from "@aws-sdk/client-s3";
 import { ConfigService } from "@nestjs/config";
 import { S3UploadException } from "../exceptions/s3-upload.exception";
@@ -25,18 +25,35 @@ export class S3Service {
     }): Promise<void> {
 
         const { key, buffer, contentType } = data;
+
+        const command = new PutObjectCommand({
+            Bucket: this.bucketName,
+            Key: key,
+            Body: buffer,
+            ContentType: contentType,
+        });
+
         try {
-            await this.s3Client.send(
-                new PutObjectCommand({
-                    Bucket: this.bucketName,
-                    Key: key,
-                    Body: buffer,
-                    ContentType: contentType,
-                }),
-            );
+            await this.s3Client.send(command);
         } catch (error: unknown) {
             this.logger.error(`Failed to upload file to S3. Key: ${key}`, error);
             throw new S3UploadException(error);
+        }
+    }
+
+    public async deleteImage(key: string): Promise<void> {
+        const command = new PutObjectCommand({
+            Bucket: this.bucketName,
+            Key: key
+        })
+
+        try {
+            await this.s3Client.send(command);
+        } catch (error: unknown) {
+            this.logger.error(`Failed to delete image from S3. Key: ${key}`, error);
+            throw new ServiceUnavailableException(
+                'Failed to delete image from AWS S3',
+            );
         }
     }
 
