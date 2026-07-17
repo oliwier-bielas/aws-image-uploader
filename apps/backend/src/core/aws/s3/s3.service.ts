@@ -1,7 +1,8 @@
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
-import { PutObjectCommand, PutObjectCommandInput, S3Client } from "@aws-sdk/client-s3";
 import { ConfigService } from "@nestjs/config";
 import { S3UploadException } from "../exceptions/s3-upload.exception";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 @Injectable()
 export class S3Service {
     private readonly s3Client: S3Client;
@@ -39,6 +40,17 @@ export class S3Service {
             this.logger.error(`Failed to upload file to S3. Key: ${key}`, error);
             throw new S3UploadException(error);
         }
+    }
+
+    public getImageUrl(key: string): Promise<string> {
+        const command = new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key: key,
+        });
+
+        return getSignedUrl(this.s3Client, command, {
+            expiresIn: 3600,
+        });
     }
 
     public async deleteImage(key: string): Promise<void> {
