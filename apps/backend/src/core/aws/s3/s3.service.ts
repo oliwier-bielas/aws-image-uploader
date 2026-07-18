@@ -3,6 +3,7 @@ import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config";
 import { S3UploadException } from "../exceptions/s3-upload.exception";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3DeleteException } from "../exceptions/s3-delete.exception";
 @Injectable()
 export class S3Service {
     private readonly s3Client: S3Client;
@@ -63,9 +64,7 @@ export class S3Service {
             await this.s3Client.send(command);
         } catch (error: unknown) {
             this.logger.error(`Failed to delete image from S3. Key: ${key}`, error);
-            throw new ServiceUnavailableException(
-                'Failed to delete image from AWS S3',
-            );
+            throw new S3DeleteException();
         }
     }
 
