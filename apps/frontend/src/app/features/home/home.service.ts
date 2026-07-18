@@ -14,4 +14,11 @@ export class HomeService {
     public getUploadedImages(): Observable<Image[]> {
         return this.http.get<Image[]>(`${this.apiUrl}/images`);
     }
+
+    public uploadImage(file: File): Observable<Image> {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        return this.http.post<Image>(`${this.apiUrl}/images`, formData);
+    }
 }

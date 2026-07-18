@@ -9,15 +9,38 @@
     </header>
 
     <footer class="home-card__actions">
-      <aiu-button label="Choose file" variant="filled"></aiu-button>
-      <aiu-button label="Start upload" variant="tonal"></aiu-button>
+      <input
+        #fileInput
+        type="file"
+        accept="image/*"
+        class="home-card__file-input"
+        (change)="onFileSelected($event)"
+      />
+
+      @if (uploadFile()) {
+        <span class="home-card__file-name">{{ uploadFile()!.name }}</span>
+      }
+
+      <aiu-button
+        label="Choose file"
+        variant="filled"
+        (click)="fileInput.click()"
+      ></aiu-button>
+      <aiu-button
+        [label]="isUploading() ? 'Uploading...' : 'Start upload'"
+        variant="tonal"
+        [disabled]="!uploadFile() || isUploading()"
+        (click)="uploadSelectedImage(fileInput)"
+      ></aiu-button>
     </footer>
+
+    @if (uploadError()) {
+      <p class="home-card__error">{{ uploadError() }}</p>
+    }
 
     <section class="home-card__gallery">
       <h2 class="home-card__gallery-title">Recent images</h2>
-      @if (uploadedImages()) {
-         <aiu-image-grid [images]="uploadedImages()!"></aiu-image-grid>
-      }
+      <aiu-image-grid [images]="uploadedImages()"></aiu-image-grid>
     </section>
   </section>
 </div>

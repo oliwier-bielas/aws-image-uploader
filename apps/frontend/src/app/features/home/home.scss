@@ -55,6 +55,25 @@
   align-items: center;
 }
 
+.home-card__file-input {
+  display: none;
+}
+
+.home-card__file-name {
+  flex: 1 1 12rem;
+  min-width: 0;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-card__error {
+  color: var(--mat-sys-error);
+  font: var(--mat-sys-body-medium);
+}
+
 .home-card__gallery {
   display: flex;
   flex-direction: column;
