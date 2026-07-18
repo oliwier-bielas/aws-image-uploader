@@ -1,4 +1,4 @@
-import { Component, input, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ButtonVariantEnum, ButtonVariantType } from './button.models';
 
@@ -12,4 +12,5 @@ import { ButtonVariantEnum, ButtonVariantType } from './button.models';
 export class Button {
   public label = input.required<string>();
   public variant = input<ButtonVariantType>(ButtonVariantEnum.FILLED);
+  public disabled = input(false);
 }
