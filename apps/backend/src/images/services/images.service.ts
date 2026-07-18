@@ -1,17 +1,15 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 
-import { IMAGES_MOCK } from '../mocks/images.mock';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3Service } from '../../core/aws/s3/s3.service';
+import { randomUUID } from 'crypto';
+import { extname } from 'path';
 import { Repository } from 'typeorm';
+import { S3Service } from '../../core/aws/s3/s3.service';
 import { ImageEntity } from '../entities/image.entity';
 import { Image } from '../interface/image.interface';
-import { extname } from 'path';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ImagesService {
-    private imagesMocks: Image[] = IMAGES_MOCK;
     private readonly logger = new Logger();
 
     constructor(
@@ -30,16 +28,6 @@ export class ImagesService {
                 key: await this.s3Service.getImageUrl(image.key),
             })),
         );
-    }
-
-    public getById(id: string): Image {
-        const image = this.imagesMocks.find((image) => image.id === id);
-
-        if (!image) {
-            throw new NotFoundException(`Image with id: ${id} was not found.`)
-        }
-
-        return image;
     }
 
     public async uploadImage(file: Express.Multer.File): Promise<Image> {

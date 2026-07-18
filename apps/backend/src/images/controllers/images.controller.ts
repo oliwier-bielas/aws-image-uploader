@@ -13,11 +13,6 @@ export class ImagesController {
         return this.imageService.getAllImages();
     }
 
-    @Get(':id')
-    public getById(@Param('id') id: string): Image {
-        return this.imageService.getById(id);
-    }
-
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
