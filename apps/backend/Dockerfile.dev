@@ -1,0 +1,11 @@
+FROM node:alphine
+
+WORKDIR /usr/src/app
+
+COPY . /usr/src/app
+
+RUN npm install @nestjs/cli
+
+RUN npm install
+
+CMD ["npm", "run", "start:dev", "0.0.0.0"]
