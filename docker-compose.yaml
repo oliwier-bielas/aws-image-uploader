@@ -12,5 +12,19 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
 
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+
+    container_name: aws-image-uploader-frontend
+
+    ports:
+      - "4200:4200"
+
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+
 volumes:
   postgres-data:
