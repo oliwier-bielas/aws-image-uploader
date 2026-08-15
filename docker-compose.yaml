@@ -33,6 +33,9 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile.dev
+    
+    env_file:
+      - ./apps/backend/.env
 
     container_name: aws-image-uploader-backend
 
